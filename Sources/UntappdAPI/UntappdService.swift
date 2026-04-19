@@ -21,6 +21,10 @@ public final class UntappdService: @unchecked Sendable {
         self.clientSecret = clientSecret
         self.urlSession = urlSession
     }
+    
+    func search(text: String) async throws -> UntappdSearchResponse {
+        return try await get(path: "search/beer", params: ["q": text])
+    }
 
     public func fetchBeerData(beerId: String) async throws -> Data {
         try await get(path: "/beer/info/\(beerId)")
@@ -29,13 +33,22 @@ public final class UntappdService: @unchecked Sendable {
     public func fetchBreweryData(breweryId: Int) async throws -> Data {
         try await get(path: "/brewery/info/\(breweryId)")
     }
+    
+    private func get<T: Decodable>(path: String, params: [String: String]) async throws -> T {
+        let data = try await get(path: path)
+        let decoder = JSONDecoder()
+        return try decoder.decode(T.self, from: data)
+    }
 
-    private func get(path: String) async throws -> Data {
+    private func get(path: String, params: [String: String] = [:]) async throws -> Data {
         var components = URLComponents(string: Self.apiBase + path)
         components?.queryItems = [
             URLQueryItem(name: "client_id", value: clientID),
             URLQueryItem(name: "client_secret", value: clientSecret),
         ]
+        for (key, value) in params {
+            components?.queryItems?.append(URLQueryItem(name: key, value: value))
+        }
         guard let url = components?.url else {
             throw UntappdServiceError.invalidURL
         }
