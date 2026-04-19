@@ -36,7 +36,7 @@ public final class UntappdService: @unchecked Sendable {
     }
     
     private func get<T: Decodable>(path: String, params: [String: String]) async throws -> T {
-        let data = try await get(path: path)
+        let data = try await get(path: path, params: params)
         let decoder = JSONDecoder()
         return try decoder.decode(T.self, from: data)
     }
