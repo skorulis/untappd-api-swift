@@ -5,6 +5,7 @@ import Foundation
 public enum UntappdServiceError: Error {
     case invalidHTTPStatus(Int)
     case invalidURL
+    case invalidIDs
 }
 
 /// Performs HTTP requests to the Untappd API. Response handling (decode, persistence, business logic) belongs to the caller.
@@ -41,6 +42,9 @@ public final class UntappdService: @unchecked Sendable {
     }
 
     private func get(path: String, params: [String: String] = [:]) async throws -> Data {
+        guard !clientID.isEmpty && !clientSecret.isEmpty else {
+            throw UntappdServiceError.invalidIDs
+        }
         var components = URLComponents(string: Self.apiBase + path)
         components?.queryItems = [
             URLQueryItem(name: "client_id", value: clientID),
@@ -52,6 +56,9 @@ public final class UntappdService: @unchecked Sendable {
         guard let url = components?.url else {
             throw UntappdServiceError.invalidURL
         }
+        
+        print("UNTAPPD: \(url.absoluteString)")
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         let (data, response) = try await urlSession.data(for: request)
