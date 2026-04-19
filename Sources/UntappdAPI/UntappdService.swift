@@ -24,7 +24,7 @@ public final class UntappdService: @unchecked Sendable {
     }
     
     public func search(text: String) async throws -> UntappdSearchResponse {
-        return try await get(path: "search/beer", params: ["q": text])
+        return try await get(path: "/search/beer", params: ["q": text])
     }
 
     public func fetchBeerData(beerId: String) async throws -> Data {
