@@ -22,7 +22,7 @@ public final class UntappdService: @unchecked Sendable {
         self.urlSession = urlSession
     }
     
-    func search(text: String) async throws -> UntappdSearchResponse {
+    public func search(text: String) async throws -> UntappdSearchResponse {
         return try await get(path: "search/beer", params: ["q": text])
     }
 
