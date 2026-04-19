@@ -27,7 +27,7 @@ public final class UntappdService: @unchecked Sendable {
         return try await get(path: "/search/beer", params: ["q": text])
     }
 
-    public func fetchBeerData(beerId: String) async throws -> Data {
+    public func fetchBeerData(beerId: String) async throws -> GetBeerResponse {
         try await get(path: "/beer/info/\(beerId)")
     }
 
@@ -35,7 +35,7 @@ public final class UntappdService: @unchecked Sendable {
         try await get(path: "/brewery/info/\(breweryId)")
     }
     
-    private func get<T: Decodable>(path: String, params: [String: String]) async throws -> T {
+    private func get<T: Decodable>(path: String, params: [String: String] = [:]) async throws -> T {
         let data = try await get(path: path, params: params)
         let decoder = JSONDecoder()
         return try decoder.decode(T.self, from: data)
